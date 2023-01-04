@@ -33,3 +33,6 @@ table {
   /* border-spacing은 border의 사이의 간격을 0으로 초기화 */
 }
 
+input, textarea, select {
+  box-sizing: border-box;
+}

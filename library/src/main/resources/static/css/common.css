@@ -1,3 +1,4 @@
+/* 공통사항 */
 @font-face {
   font-family: 'SUIT-Regular';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2') format('woff2');
@@ -8,6 +9,30 @@
 * {
   font-family: 'SUIT-Regular';
   font-size: 14px;
+}
+
+/* 스크롤바 변경하는 방법 */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-thumb { /* 안쪽에 움직이는 전체 바 길이*/
+  background-color: #3e3e3e;
+  border-radius: 5px;
+}
+
+body {
+  height: 100%;
+  background-image: url(/static/images/KakaoTalk_20230103_210824944.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed; /* 스크롤바 움직일때 이미지가 따라다님 */
+}
+
+#container {
+  margin: 0 auto;
+  width: 1400px;
 }
 
 input, select, textarea, table, th, td {
@@ -21,4 +46,17 @@ input, textarea {
 
 input, select, textarea {
   padding: 5px;
+  cursor: pointer;
+}
+
+button {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: white;
+}
+
+button:hover {
+  background-color: #fafafa;
+  color: #3e3e3e;
 }
