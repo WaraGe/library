@@ -24,6 +24,9 @@ public class UserDto {
     private String password;
 
     @NotBlank
+    private String repassword;
+
+    @NotBlank
     private String name;
 
     @NotBlank

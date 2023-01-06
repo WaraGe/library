@@ -18,7 +18,7 @@ public class AccountApi {
 
     @ValidAspect
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
 
         return ResponseEntity
                 .created(null)
