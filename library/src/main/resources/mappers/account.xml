@@ -12,12 +12,17 @@
         <result property="email" column="email"></result>
         <result property="createDate" column="create_date"></result>
         <result property="updateDate" column="update_date"></result>
+
         <collection property="roleDtlDto" javaType="list" resultMap="roleDtl"></collection>
-                        <!--list로 생성되서 roleDtlDto에 생성됨-->
+        <!--collection은 무조건 마지막으로-->
+        <!--list로 생성되서 roleDtlDto에 생성됨-->
     </resultMap>
 
     <resultMap id="roleMst" type="com.korit.library.web.dto.RoleMstDto">
-
+        <result property="roleId" column="role_id"></result>
+        <result property="roleName" column="role_name"></result>
+        <result property="createdDate" column="create_date"></result>
+        <result property="updatedDate" column="update_date"></result>
     </resultMap>
 
     <resultMap id="roleDtl" type="com.korit.library.web.dto.RoleDtlDto">
@@ -27,6 +32,8 @@
         <result property="roleId" column="role_id"></result>
         <result property="createDate" column="create_date"></result>
         <result property="updateDate" column="update_date"></result>
+
+        <collection property="roleMstDto" resultMap="roleMst"></collection>
     </resultMap>
 
     <select id="findUserByUsername" parameterType="String" resultMap="userMst">
@@ -49,4 +56,41 @@
         where
             um.username = #{username}
     </select>
+
+    <select id="findUserByUserId" parameterType="integer" resultMap="userMst">
+        select
+        um.user_id,
+        um.username,
+        um.password,
+        um.name,
+        um.email,
+
+        rd.role_id,
+        rm.role_name,
+
+        um.create_date,
+        um.update_date
+        from
+        user_mst um
+        left outer join role_Dtl rd on(rd.user_id = um.user_id)
+        left outer join role_mst rm on(rm.role_id = rd.role_id)
+        where
+        um.user_id = #{userId}
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="saveUser"
+            parameterType="com.korit.library.web.dto.UserDto"
+            useGeneratedKeys="true"
+            keyProperty="userId">
+            <!--useGeneratedKeys를 사용해서 AI를 허용하고, 그 키를 keyProperty를 이용해셔 userId로 지정한다-->
+            <!--user_mst의 userid의 값이 2라면, saveRole에서 데이터의 값이 2가 되고, 2번인덱스의 값의 역할은 1번이 되는 회원가입을 싫행-->
+        insert into user_mst
+        values (0, #{username}, #{password}, #{name}, #{email}, now(), now())
+    </insert>
+
+    <insert id="saveRole" parameterType="com.korit.library.web.dto.UserDto">
+        insert into role_dtl
+        values (0, #{userId}, 1, now(), now())
+    </insert>
 </mapper>
