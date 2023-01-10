@@ -6,6 +6,7 @@ import com.korit.library.web.dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public UserDto registerUser(UserDto userDto) {
+        userDto.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword())); // saveuser가 db에 저장되기 전에 암호화
         accountRepository.saveUser(userDto);
         accountRepository.saveRole(userDto);
         return userDto;

@@ -37,8 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll() // 인증을 줘라
                 .and() //
                 .formLogin() // 폼tag로 로그인하라
-                .loginPage("/account/login") // 로그인 페이지 get요청
-                .loginProcessingUrl("/account/login") // 위와 같은 경로
+                .loginPage("/account/login") // 로그인 페이지 GET요청
+                .loginProcessingUrl("/account/login") // 로그인 인증 POST요청
                 .defaultSuccessUrl("/index"); // 성공한다면 index.html로 돌아옴
 
     }
