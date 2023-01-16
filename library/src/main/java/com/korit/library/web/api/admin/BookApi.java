@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -59,4 +60,33 @@ public class BookApi {
                 .ok()
                 .body(new CMRespDto<>(HttpStatus.OK.value(), "Successfully", true));
     }
+
+    @ParamsAspect
+    @DeleteMapping("/book/{bookCode}")
+    public ResponseEntity<CMRespDto<?>> deletebook(@PathVariable String bookCode) {
+        bookService.removeBook(bookCode);
+        return ResponseEntity
+                .ok()
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Delete Successfully", true));
+    }
+
+    @ParamsAspect
+    @ValidAspect
+    @PatchMapping("/book/{bookCode}")
+    public ResponseEntity<CMRespDto<?>> maintainModifyBook(@PathVariable String bookCode, @Valid @RequestBody BookReqDto bookReqDtm, BindingResult bindingResult) {
+        bookService.maintainModifyBook(bookReqDtm);
+        return ResponseEntity
+                .ok()
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Update Successfully", true));
+    }
+
+    //파일 입출력
+    @ParamsAspect
+    @PostMapping("/book/{bookCode}/images")
+    public ResponseEntity<CMRespDto<?>> registerBookImg(@PathVariable String bookCode, @RequestPart List<MultipartFile> files) {
+        bookService.registerBookImage(bookCode, files);
+        return ResponseEntity.ok()
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Img Upload Successfully", true));
+    }
+
 }

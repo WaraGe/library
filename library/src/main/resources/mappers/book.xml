@@ -85,20 +85,31 @@
 
     <update id="maintainUpdateBookByBookCode" parameterType="com.korit.library.web.dto.BookReqDto">
         update book_mst
-        <!--<trim prefix="set" suffixOverrides=",">
-            <if test="b"></if>
-            <if test="b"></if>
-            <if test="b"></if>
-            <if test="b"></if>
-        </trim>-->
         set
             book_name = #{bookName},
-            <if test='author != null'>author = if(#{author} = '', null, #{author}),</if>
-            <if test='publisher != null'>publisher = if(#{publisher} = '', null, #{publisher}),</if>
-            <if test='publication_date != null'>publication_date = if(#{publicationDate} = '', null, #{publicationDate}),</if>
+            <if test='author != null and author != ""'>author = if(#{author} = '', null, #{author}),</if>
+            <if test='publisher != null and publisher != ""'>publisher = if(#{publisher} = '', null, #{publisher}),</if>
+            <if test='publicationDate != null'>publication_date = if(#{publicationDate} = '', null, #{publicationDate}),</if>
             category = #{category}
         where
             book_code = #{bookCode};
     </update>
+
+    <delete id="deleteBook" parameterType="com.korit.library.web.dto.BookReqDto">
+        delete from
+            book_mst
+        where
+            book_code = #{bookCode};
+    </delete>
+    
+    <insert id="registerBookImages" parameterType="list">
+        insert into book_image
+        values
+            <!--mybatis에서 forEach 사용방법-->
+            <!--item = 변수명, separator이 넘어갈때마다 ,을 자동으로 찍어줌 insert오류 방지-->
+            <foreach collection="list" item="file" separator=",">
+                (0, #{file.bookCode}, #{file.saveName}, #{file.originName})
+            </foreach>
+    </insert>
 
 </mapper>
