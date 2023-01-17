@@ -21,6 +21,6 @@ mybatis:
     - /mappers/*.xml
 
 file:
-  path: C:/junil/web-3-202210/library/library/upload
+  path: C:/junil/web-3-202210/library/library/upload/
 
 
