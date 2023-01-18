@@ -1,9 +1,11 @@
 package com.korit.library.service;
 
+import com.korit.library.entity.BookImage;
+import com.korit.library.entity.BookMst;
+import com.korit.library.entity.CategoryView;
 import com.korit.library.exception.CustomValidationException;
 import com.korit.library.repository.BookRepository;
 import com.korit.library.web.dto.*;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,12 +29,12 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public List<BookMstDto> searchBook(SearchReqDto searchReqDto) {
+    public List<BookMst> searchBook(SearchReqDto searchReqDto) {
         searchReqDto.setIndex();
         return bookRepository.searchBook(searchReqDto);
     }
 
-    public List<CategoryDto> getCategories() {
+    public List<CategoryView> getCategories() {
         return bookRepository.findAllCategory();
     }
 
@@ -42,8 +44,8 @@ public class BookService {
     }
 
     private void duplicateBookCode(String bookCode) {
-        BookMstDto bookMstDto = bookRepository.findBookByBookCode(bookCode);
-            if(bookMstDto != null) { //user가 있다면
+        BookMst bookMst = bookRepository.findBookByBookCode(bookCode);
+            if(bookMst != null) { //user가 있다면
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("bookCode", "이미 존재하는 도서코드입니다.");
 
@@ -68,7 +70,7 @@ public class BookService {
 
             throw new CustomValidationException(errorMap); // error 생성
         }
-        List<BookImageDto> bookImageDtos = new ArrayList<>();
+        List<BookImage> bookImages = new ArrayList<>();
 
         files.forEach(file -> {
             String originFileName = file.getOriginalFilename(); // 파일 이름 가져오기
@@ -89,30 +91,30 @@ public class BookService {
                 throw new RuntimeException(e);
             }
 
-            BookImageDto bookImageDto = BookImageDto.builder()
+            BookImage bookImage = BookImage.builder()
                     .bookCode(bookCode)
                     .saveName(tempFileName)
                     .originName(originFileName)
                     .build();
             
-            bookImageDtos.add(bookImageDto); // list파일을 하나식 꺼내서 파일에 저장후 dto에 들어가서 list를 add(이미지의 갯수만큼)
+            bookImages.add(bookImage); // list파일을 하나식 꺼내서 파일에 저장후 dto에 들어가서 list를 add(이미지의 갯수만큼)
         });
-        bookRepository.registerBookImages(bookImageDtos);
+        bookRepository.registerBookImages(bookImages);
     }
-    public List<BookImageDto> getBooks(String bookCode) {
+    public List<BookImage> getBooks(String bookCode) {
         return bookRepository.findBookImageAll(bookCode);
     }
 
     public void removeBookImage(int imageId) {
-        BookImageDto bookImageDto = bookRepository.findBookImageByImageId(imageId);
-        if(bookImageDto == null) {
+        BookImage bookImage = bookRepository.findBookImageByImageId(imageId);
+        if(bookImage == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("error", "존재하지 않는 아이디 입니다");
 
             throw new CustomValidationException(errorMap);
         }
         if(bookRepository.deleteBookImage(imageId) > 0) { //0보다 크므로 지웠다는 의미(파일이 있었다!)
-            File file = new File(filePath + "book/" + bookImageDto.getSaveName()); // getSaveName == 저장된 파일의 이름
+            File file = new File(filePath + "book/" + bookImage.getSaveName()); // getSaveName == 저장된 파일의 이름
             if(file.exists()) { // 존재 한다면
                 file.delete();
             }

@@ -4,10 +4,9 @@ import com.korit.library.aop.annotation.ValidAspect;
 import com.korit.library.security.PrincipalDetails;
 import com.korit.library.service.AccountService;
 import com.korit.library.web.dto.CMRespDto;
-import com.korit.library.web.dto.UserDto;
+import com.korit.library.entity.UserMst;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +29,12 @@ public class AccountApi {
     @ApiOperation(value = "회원가입", notes = "회원가입 요청")
     @ValidAspect
     @PostMapping("/register")
-    public ResponseEntity<? extends CMRespDto<? extends UserDto>> register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<? extends CMRespDto<? extends UserMst>> register(@RequestBody @Valid UserMst userMst, BindingResult bindingResult) {
 
-        accountService.duplicateUsername(userDto.getUsername()); // 검사
-        accountService.comparePassword(userDto.getPassword(), userDto.getRepassword()); // 기존패스워드와 리패스워드와 비교
+        accountService.duplicateUsername(userMst.getUsername()); // 검사
+        accountService.comparePassword(userMst.getPassword(), userMst.getRepassword()); // 기존패스워드와 리패스워드와 비교
 
-        UserDto user = accountService.registerUser(userDto);
+        UserMst user = accountService.registerUser(userMst);
 
         return ResponseEntity
                 .created(URI.create("/api/account/user/" + user.getUserId()))
@@ -51,7 +50,7 @@ public class AccountApi {
     })
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<? extends CMRespDto<? extends UserDto>> getUser(
+    public ResponseEntity<? extends CMRespDto<? extends UserMst>> getUser(
         // @ApiParam(value = "사용자 식별 코드")
             @PathVariable int userId) {
         return ResponseEntity

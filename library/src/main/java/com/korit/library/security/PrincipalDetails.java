@@ -1,15 +1,14 @@
 package com.korit.library.security;
 
-import com.korit.library.web.dto.RoleDtlDto;
-import com.korit.library.web.dto.RoleMstDto;
-import com.korit.library.web.dto.UserDto;
+import com.korit.library.entity.RoleDtl;
+import com.korit.library.entity.RoleMst;
+import com.korit.library.entity.UserMst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +20,7 @@ public class PrincipalDetails implements UserDetails {
 
     //생성자 생성
     @Getter
-    private final UserDto user;
+    private final UserMst user;
     private Map<String, Object> response;
 
     // 권한을 리스트로 관리하는 부분
@@ -29,11 +28,11 @@ public class PrincipalDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() { //lamda
         ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        List<RoleDtlDto> roleDtlDtoList = user.getRoleDtlDto();
-        for(int i = 0; i < roleDtlDtoList.size(); i++) {
-            RoleDtlDto dtl =  roleDtlDtoList.get(i);
-            RoleMstDto roleMstDto = dtl.getRoleMstDto();
-            String roleName = roleMstDto.getRoleName();
+        List<RoleDtl> roleDtlList = user.getRoleDtl();
+        for(int i = 0; i < roleDtlList.size(); i++) {
+            RoleDtl dtl =  roleDtlList.get(i);
+            RoleMst roleMst = dtl.getRoleMst();
+            String roleName = roleMst.getRoleName();
 
             GrantedAuthority role = new GrantedAuthority() {
                 @Override

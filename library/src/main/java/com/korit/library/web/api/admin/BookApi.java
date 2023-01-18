@@ -2,6 +2,9 @@ package com.korit.library.web.api.admin;
 
 import com.korit.library.aop.annotation.ParamsAspect;
 import com.korit.library.aop.annotation.ValidAspect;
+import com.korit.library.entity.BookImage;
+import com.korit.library.entity.BookMst;
+import com.korit.library.entity.CategoryView;
 import com.korit.library.service.BookService;
 import com.korit.library.web.dto.*;
 import io.swagger.annotations.Api;
@@ -26,7 +29,7 @@ public class BookApi {
     @ParamsAspect
     @ValidAspect
     @GetMapping("/books")
-    public ResponseEntity<CMRespDto<List<BookMstDto>>> searchBook(@Valid SearchReqDto searchReqDto, BindingResult bindingResult) {
+    public ResponseEntity<CMRespDto<List<BookMst>>> searchBook(@Valid SearchReqDto searchReqDto, BindingResult bindingResult) {
 
         return ResponseEntity
                 .ok()
@@ -35,7 +38,7 @@ public class BookApi {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<CMRespDto<List<CategoryDto>>> getCategories() {
+    public ResponseEntity<CMRespDto<List<CategoryView>>> getCategories() {
         return ResponseEntity
                 .ok()
                 .body(new CMRespDto<>(HttpStatus.OK.value(), "Successfully", bookService.getCategories()));
@@ -92,10 +95,10 @@ public class BookApi {
     //이미지 삽입
     @ParamsAspect
     @GetMapping("/book/{bookCode}/images")
-    public ResponseEntity<CMRespDto<List<BookImageDto>>> getImages(@PathVariable String bookCode) {
-        List<BookImageDto> bookImageDtos = bookService.getBooks(bookCode);
+    public ResponseEntity<CMRespDto<List<BookImage>>> getImages(@PathVariable String bookCode) {
+        List<BookImage> bookImages = bookService.getBooks(bookCode);
         return ResponseEntity.ok()
-                .body(new CMRespDto<>(HttpStatus.OK.value(), "Successfully", bookImageDtos));
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Successfully", bookImages));
     }
 
     @DeleteMapping("/book/{bookCode}/image/{imageId}")

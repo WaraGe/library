@@ -2,7 +2,7 @@ package com.korit.library.security;
 
 import com.korit.library.aop.annotation.ParamsAspect;
 import com.korit.library.repository.AccountRepository;
-import com.korit.library.web.dto.UserDto;
+import com.korit.library.entity.UserMst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +22,7 @@ public class PrincipalDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         // 해당 username이 DB(user_mst table)에 존재하는지 확인
-        UserDto user = accountRepository.findUserByUsername(username);
+        UserMst user = accountRepository.findUserByUsername(username);
 
         //비밀번호 암호화 체크
         if(user == null) {
