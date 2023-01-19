@@ -30,4 +30,6 @@ public class BookMst {
     @ApiModelProperty(value = "분야", example = "소설")
     private String category;
 
+    private BookLike bookLike; //bookmst에 booklike를 join
+
 }
