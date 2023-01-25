@@ -12,23 +12,33 @@
             bm.publisher,
             bm.publication_date as publicationDate,
             bm.category,
-            bl.like_id,
-            bl.book_id,
-            bl.user_id
+            rd.rentalStatus
         from
             book_mst bm
-            left outer join book_like bl on(bl.book_id = bm.book_id and bl.user_id = #{userId})
+            left outer join (select
+                                rd1.book_id,
+                                if(rd2.return_date is null, 'Y', 'N') as rentalStatus
+                            from
+                                (select
+                                    max(rental_dtl_id) as rental_dtl_id,
+                                    book_id
+                                from
+                                    rental_dtl
+                                group by
+                                    book_id) rd1
+                                left outer join rental_dtl rd2 on(rd2.rental_dtl_id = rd1.rental_dtl_id)) rd
+            on(rd.book_id = bm.book_id)
         where
             1 = 1
-        <if test="searchValue != null">
-        and (
-               bm.book_name like CONCAT('%', #{searchValue}, '%')
+        <if test='searchValue != null and searchValue != ""'>
+            and (
+            bm.book_name like CONCAT('%', #{searchValue}, '%')
             or bm.author like CONCAT('%', #{searchValue}, '%')
             or bm.publisher like CONCAT('%', #{searchValue}, '%'))
         </if>
 
-        <if test="category != null">
-        and bm.category = #{category}
+        <if test='category != null and category != ""'>
+            and bm.category = #{category}
         </if>
 
         order by
@@ -39,7 +49,7 @@
             <when test='order == "dateDesc"'>bm.publication_date desc,</when>
             <!--<otherwise></otherwise> elseif와 같은뜻-->
         </choose>
-            bm.book_id
+        bm.book_id
         <if test='limit == "Y"'>
             limit #{index}, #{count}
         </if>
@@ -72,80 +82,80 @@
     <insert id="saveBook" parameterType="com.korit.library.web.dto.BookReqDto">
         insert into book_mst
         values
-            (0, #{bookCode}, #{bookName}, #{author}, #{publisher}, #{publicationDate}, #{category})
+        (0, #{bookCode}, #{bookName}, #{author}, #{publisher}, #{publicationDate}, #{category})
     </insert>
 
     <update id="updateBookByBookCode" parameterType="com.korit.library.web.dto.BookReqDto">
         update book_mst
         set
-            book_name = #{bookName},
-            author = if(#{author} = '', null, #{author}),
-            publisher = if(#{publisher} = '', null, #{publisher}),
-            publication_date = if(#{publicationDate} = '', null, #{publicationDate}),
-            category = #{category}
+        book_name = #{bookName},
+        author = if(#{author} = '', null, #{author}),
+        publisher = if(#{publisher} = '', null, #{publisher}),
+        publication_date = if(#{publicationDate} = '', null, #{publicationDate}),
+        category = #{category}
         where
-            book_code = #{bookCode};
+        book_code = #{bookCode};
     </update>
 
     <update id="maintainUpdateBookByBookCode" parameterType="com.korit.library.web.dto.BookReqDto">
         update book_mst
         set
-            book_name = #{bookName},
-            <if test='author != null and author != ""'>author = if(#{author} = '', null, #{author}),</if>
-            <if test='publisher != null and publisher != ""'>publisher = if(#{publisher} = '', null, #{publisher}),</if>
-            <if test='publicationDate != null'>publication_date = if(#{publicationDate} = '', null, #{publicationDate}),</if>
-            category = #{category}
+        book_name = #{bookName},
+        <if test='author != null and author != ""'>author = if(#{author} = '', null, #{author}),</if>
+        <if test='publisher != null and publisher != ""'>publisher = if(#{publisher} = '', null, #{publisher}),</if>
+        <if test='publicationDate != null'>publication_date = if(#{publicationDate} = '', null, #{publicationDate}),</if>
+        category = #{category}
         where
-            book_code = #{bookCode};
+        book_code = #{bookCode};
     </update>
 
     <delete id="deleteBook" parameterType="com.korit.library.web.dto.BookReqDto">
         delete from
-            book_mst
+        book_mst
         where
-            book_code = #{bookCode};
+        book_code = #{bookCode};
     </delete>
-    
+
     <insert id="registerBookImages" parameterType="list">
         insert into book_image
         values
-            <!--mybatis에서 forEach 사용방법-->
-            <!--item = 변수명, separator이 넘어갈때마다 ,을 자동으로 찍어줌 insert오류 방지-->
-            <foreach collection="list" item="file" separator=",">
-                (0, #{file.bookCode}, #{file.saveName}, #{file.originName})
-            </foreach>
+        <!--mybatis에서 forEach 사용방법-->
+        <!--item = 변수명, separator이 넘어갈때마다 ,을 자동으로 찍어줌 insert오류 방지-->
+        <foreach collection="list" item="file" separator=",">
+            (0, #{file.bookCode}, #{file.saveName}, #{file.originName})
+        </foreach>
     </insert>
 
     <select id="findBookImageAll" resultType="com.korit.library.entity.BookImage">
         select
-            image_id as imageId,
-            book_code as bookCode,
-            save_name as saveName,
-            origin_name as originName
+        image_id as imageId,
+        book_code as bookCode,
+        save_name as saveName,
+        origin_name as originName
         from
-            book_image
+        book_image
         where
-            book_code = #{bookCode}
+        book_code = #{bookCode}
     </select>
 
     <select id="findBookImageByImageId" resultType="com.korit.library.entity.BookImage">
         select
-            image_id as imageId,
-            book_code as bookCode,
-            save_name as saveName,
-            origin_name as originName
+        image_id as imageId,
+        book_code as bookCode,
+        save_name as saveName,
+        origin_name as originName
         from
-            book_image
+        book_image
         where
-            image_id = #{imageId}
+        image_id = #{imageId}
     </select>
 
     <delete id="deleteBookImage">
         delete
         from
-            book_image
+        book_image
         where
-            image_id = #{imageId}
+        image_id = #{imageId}
     </delete>
 
 

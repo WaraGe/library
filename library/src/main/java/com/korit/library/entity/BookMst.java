@@ -29,6 +29,8 @@ public class BookMst {
     private LocalDate publicationDate;
     @ApiModelProperty(value = "분야", example = "소설")
     private String category;
+    @ApiModelProperty(value = "상태", example = "Y")
+    private String rentalStatus;
 
     private BookLike bookLike; //bookmst에 booklike를 join
 
