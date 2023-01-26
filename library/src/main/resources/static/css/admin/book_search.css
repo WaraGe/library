@@ -31,9 +31,19 @@
 
 .content-item {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 10px;
   width: 100%;
+}
+
+.delete-button {
+  border: 1px solid #ff4141;
+  padding: 5px 10px;
+}
+
+.delete-button:hover {
+  background-color: #ff4141;
+  color: white;
 }
 
 .table-container {
@@ -84,3 +94,14 @@
   background-color: #202020;
   color: white;
 }
+
+.page-controller .disabled {
+  background-color: #202020;
+  color: white;
+  cursor: default;
+}
+
+.search-input {
+  cursor: text;
+}
+
