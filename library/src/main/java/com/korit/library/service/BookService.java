@@ -63,6 +63,9 @@ public class BookService {
     public void removeBook(String BookCode) {
         bookRepository.deleteBook(BookCode);
     }
+    public void removeBooks(DeleteBooksReqDto deleteBooksReqDto) {
+        bookRepository.deleteBooks(deleteBooksReqDto.getBookIds());
+    }
     public void maintainModifyBook(BookReqDto bookReqDto) {
         bookRepository.maintainUpdateBookByBookCode(bookReqDto);
     }

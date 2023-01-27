@@ -102,38 +102,50 @@
     <insert id="saveBook" parameterType="com.korit.library.web.dto.BookReqDto">
         insert into book_mst
         values
-        (0, #{bookCode}, #{bookName}, #{author}, #{publisher}, #{publicationDate}, #{category})
+            (0, #{bookCode}, #{bookName}, #{author}, #{publisher}, #{publicationDate}, #{category})
     </insert>
 
     <update id="updateBookByBookCode" parameterType="com.korit.library.web.dto.BookReqDto">
         update book_mst
         set
-        book_name = #{bookName},
-        author = if(#{author} = '', null, #{author}),
-        publisher = if(#{publisher} = '', null, #{publisher}),
-        publication_date = if(#{publicationDate} = '', null, #{publicationDate}),
-        category = #{category}
+            book_name = #{bookName},
+            author = if(#{author} = '', null, #{author}),
+            publisher = if(#{publisher} = '', null, #{publisher}),
+            publication_date = if(#{publicationDate} = '', null, #{publicationDate}),
+            category = #{category}
         where
-        book_code = #{bookCode};
+            book_code = #{bookCode};
     </update>
 
     <update id="maintainUpdateBookByBookCode" parameterType="com.korit.library.web.dto.BookReqDto">
         update book_mst
         set
-        book_name = #{bookName},
+            book_name = #{bookName},
         <if test='author != null and author != ""'>author = if(#{author} = '', null, #{author}),</if>
         <if test='publisher != null and publisher != ""'>publisher = if(#{publisher} = '', null, #{publisher}),</if>
         <if test='publicationDate != null'>publication_date = if(#{publicationDate} = '', null, #{publicationDate}),</if>
-        category = #{category}
+            category = #{category}
         where
-        book_code = #{bookCode};
+            book_code = #{bookCode};
     </update>
 
     <delete id="deleteBook" parameterType="com.korit.library.web.dto.BookReqDto">
         delete from
-        book_mst
+            book_mst
         where
-        book_code = #{bookCode};
+            book_code = #{bookCode};
+    </delete>
+
+    <delete id="deleteBooks" parameterType="list">
+        delete
+        from
+            book_mst
+        where
+            book_id in
+            <foreach collection="list" item="bookId" open="(" close=")" separator=",">
+                <!--open 괄호를 열고 close 괄호 닫고 문장 끝마다 쉼표찍기-->
+                #{bookId}
+            </foreach>
     </delete>
 
     <insert id="registerBookImages" parameterType="list">
@@ -148,34 +160,34 @@
 
     <select id="findBookImageAll" resultType="com.korit.library.entity.BookImage">
         select
-        image_id as imageId,
-        book_code as bookCode,
-        save_name as saveName,
-        origin_name as originName
+            image_id as imageId,
+            book_code as bookCode,
+            save_name as saveName,
+            origin_name as originName
         from
-        book_image
+            book_image
         where
-        book_code = #{bookCode}
+            book_code = #{bookCode}
     </select>
 
     <select id="findBookImageByImageId" resultType="com.korit.library.entity.BookImage">
         select
-        image_id as imageId,
-        book_code as bookCode,
-        save_name as saveName,
-        origin_name as originName
+            image_id as imageId,
+            book_code as bookCode,
+            save_name as saveName,
+            origin_name as originName
         from
-        book_image
+            book_image
         where
-        image_id = #{imageId}
+            image_id = #{imageId}
     </select>
 
     <delete id="deleteBookImage">
         delete
         from
-        book_image
+            book_image
         where
-        image_id = #{imageId}
+            image_id = #{imageId}
     </delete>
 
 

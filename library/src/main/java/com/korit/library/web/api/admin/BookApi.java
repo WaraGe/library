@@ -73,12 +73,21 @@ public class BookApi {
     }
 
     @ParamsAspect
-    @DeleteMapping("/book/{bookCode}")
-    public ResponseEntity<CMRespDto<?>> deletebook(@PathVariable String bookCode) {
+    @DeleteMapping("/book/{bookCode}") // 한개만 지우는 용도
+    public ResponseEntity<CMRespDto<?>> removeBook(@PathVariable String bookCode) {
         bookService.removeBook(bookCode);
         return ResponseEntity
                 .ok()
                 .body(new CMRespDto<>(HttpStatus.OK.value(), "Delete Successfully", true));
+    }
+
+    @ParamsAspect
+    @DeleteMapping("/books") //
+    public ResponseEntity<CMRespDto<?>> removeBooks(@RequestBody DeleteBooksReqDto deleteBooksReqDto) {
+        bookService.removeBooks(deleteBooksReqDto);
+        return ResponseEntity
+                .ok()
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Deletes Successfully", true));
     }
 
     @ParamsAspect

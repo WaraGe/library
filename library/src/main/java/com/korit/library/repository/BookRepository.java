@@ -38,6 +38,7 @@ public interface BookRepository {
     public int maintainUpdateBookByBookCode(BookReqDto bookReqDto);
 
     public int deleteBook(String bookCode);
+    public int deleteBooks(List<Integer> userIds);
 
     public int registerBookImages(List<BookImage> bookImages);
 
