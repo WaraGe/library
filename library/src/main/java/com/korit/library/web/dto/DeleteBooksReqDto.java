@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class DeleteBooksReqDto {
-    private List<Integer> bookIds;
+        private List<Integer> bookIds;
 }
