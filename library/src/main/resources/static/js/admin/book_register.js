@@ -19,11 +19,14 @@ class ImgFileService {
   }
   getImgPreview() {
     const bookImg = document.querySelector(".book-img");
-    const reader = new FileReader(); // js내장객체 = 파일을 읽어주는 객체 (1 파일을 읽고)
+
+    const reader = new FileReader(); // js내장객체 = 파일을 읽어주는 객체 (1 => 파일을 읽고)
+
     reader.onload = (e) => { // (3)
-      bookImg.src = e.target.result; //src에 이미지 경로를 넣는 작업
+      bookImg.src = e.target.result; //src에 이미지 경로를 넣는 작업 html의 src 경로를 바꾸므로 파일을 변경
     }
-    reader.readAsDataURL(fileObj.files[0]); // 배열의 첫번째값 (이미지객체) (2 url데이터를 받아서 onread를 실행)
+
+    reader.readAsDataURL(fileObj.files[0]); // 배열의 첫번째값 (이미지객체) (2 => readAsDataURL의 값을 받아서 윗줄의 onload를 실행)
   }
 }
 
@@ -76,15 +79,15 @@ class ComponentEvent {
       formData.forEach((value) => {
         console.log(value);
 
-        if (value.size != 0) {
+        if (value.size != 0) { // 파일의 사이즈가 0인지 아닌지 확인
           fileObj.files.push(value);
           changeFlag = true;
         }
       });
       if (changeFlag) {
         console.log("A");
-        ImgFileService.getInstance().getImgPreview(); // 이미지가 바꼈을때 위
-        imgFile.value = null;
+        ImgFileService.getInstance().getImgPreview(); // 이미지가 바꼈을때
+        imgFile.value = null; //file의 값을 비워줌
       }
     };
   }
