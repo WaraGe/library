@@ -36,3 +36,11 @@
 
   font-weight: 600;
 }
+
+.content-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  
+  width: 100%;
+}

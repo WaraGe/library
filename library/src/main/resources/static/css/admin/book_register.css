@@ -1,3 +1,11 @@
+.content-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  
+  width: 100%;
+}
+
 .content-main {
   flex-direction: row;
   justify-content: space-between;
@@ -79,9 +87,17 @@
 .book-img {
   height: 100%;
 }
-
-.img-register-button {
+.buttons-group {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+  
   width: 100%;
+}
+
+.img-register-button, 
+.img-cancel-button {
+  width: 48%;
   height: 40px;
 
   font-weight: 600;

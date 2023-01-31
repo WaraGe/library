@@ -5,61 +5,61 @@ window.onload = () => {
   ComponentEvent.getInstance().addClickEventSearchButton();
   ComponentEvent.getInstance().addClickEventDeleteButton();
   ComponentEvent.getInstance().addClickEventDeleteCheckAll();
-}
+};
 
 let searchObj = {
-  page : 1,
-  category : "",
-  searchValue : "",
-  order : "bookId",
-  limit : "Y",
-  count : 20
+  page: 1,
+  category: "",
+  searchValue: "",
+  order: "bookId",
+  limit: "Y",
+  count: 20,
 };
 
 class BookSearchApi {
   static #instance = null;
   static getInstance() {
-      if(this.#instance == null) {
-          this.#instance = new BookSearchApi();
-      }
-      return this.#instance;
+    if (this.#instance == null) {
+      this.#instance = new BookSearchApi();
+    }
+    return this.#instance;
   }
 
   getBookList(searchObj) {
-      let returnData = null;
+    let returnData = null;
 
-      $.ajax({
-          async: false,
-          type: "get",
-          url: "http://127.0.0.1:8000/api/admin/books",
-          data: searchObj,
-          dataType: "json",
-          success: response => {
-              console.log(response);
-              returnData = response.data;
-          },
-          error: error => {
-              console.log(error);
-          }
-      });
+    $.ajax({
+      async: false,
+      type: "get",
+      url: "http://127.0.0.1:8000/api/admin/books",
+      data: searchObj,
+      dataType: "json",
+      success: (response) => {
+        console.log(response);
+        returnData = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
 
-      return returnData;
+    return returnData;
   }
   getCategories() {
     let returnData = null;
 
-      $.ajax({
-        async: false,
-        type: "get",
-        url: "http://127.0.0.1:8000/api/admin/categories",
-        dataType: "json",
-        success: response => {
-            console.log(response);
-            returnData = response.data;
-        },
-        error: error => {
-            console.log(error);
-        }
+    $.ajax({
+      async: false,
+      type: "get",
+      url: "http://127.0.0.1:8000/api/admin/categories",
+      dataType: "json",
+      success: (response) => {
+        console.log(response);
+        returnData = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
     });
 
     return returnData;
@@ -69,25 +69,25 @@ class BookSearchApi {
     let returnData = null;
 
     $.ajax({
-        async: false,
-        type: "get",
-        url: "http://127.0.0.1:8000/api/admin/books/totalcount",
-        data: {
-          "category" : searchObj.category,
-          "searchValue": searchObj.searchValue
-        },
-        dataType: "json",
-        success: response => {
-            console.log(response);
-            returnData = response.data;
-        },
-        error: error => {
-            console.log(error);
-        }
+      async: false,
+      type: "get",
+      url: "http://127.0.0.1:8000/api/admin/books/totalcount",
+      data: {
+        category: searchObj.category,
+        searchValue: searchObj.searchValue,
+      },
+      dataType: "json",
+      success: (response) => {
+        console.log(response);
+        returnData = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
     });
 
     return returnData;
-}
+  }
 
   deleteBooks(deleteArray) {
     let returnFlag = false;
@@ -97,42 +97,39 @@ class BookSearchApi {
       type: "delete",
       url: "http://127.0.0.1:8000/api/admin/books",
       contentType: "application/json",
-      data: JSON.stringify(
-        {bookIds : deleteArray}
-        ),
+      data: JSON.stringify({ bookIds: deleteArray }),
       dataType: "json",
-      success: response => {
+      success: (response) => {
         console.log(response);
         returnFlag = true;
       },
-      error: error => {
+      error: (error) => {
         console.log(error);
-      }
-    })
+      },
+    });
     return returnFlag;
   }
 }
 
-
 class BookService {
   static #instance = null;
   static getInstance() {
-      if(this.#instance == null) {
-          this.#instance = new BookService();
-      }
-      return this.#instance;
+    if (this.#instance == null) {
+      this.#instance = new BookService();
+    }
+    return this.#instance;
   }
 
   loadBookList() {
-      const responseData = BookSearchApi.getInstance().getBookList(searchObj);
-      const checkAll = document.querySelector(".delete-checkall");
-      checkAll.checked = false;
-      //tbody 객체를 들고오기
-      const bookListBody = document.querySelector(".content-table tbody");
-      bookListBody.innerHTML = ""; //빈값으로 비워주기
+    const responseData = BookSearchApi.getInstance().getBookList(searchObj);
+    const checkAll = document.querySelector(".delete-checkall");
+    checkAll.checked = false;
+    //tbody 객체를 들고오기
+    const bookListBody = document.querySelector(".content-table tbody");
+    bookListBody.innerHTML = ""; //빈값으로 비워주기
 
-      responseData.forEach((data, index) => {
-        bookListBody.innerHTML += `
+    responseData.forEach((data, index) => {
+      bookListBody.innerHTML += `
         <tr>
           <td><input type="checkbox" class="delete-checkbox"/></td>
           <td class="book-id">${data.bookId}</td>
@@ -146,23 +143,24 @@ class BookService {
           <td><i class="fa-solid fa-square-pen"></i></td>
         </tr>
         `;
-      });
-      
-      this.loadSearchNumberList();
-      ComponentEvent.getInstance().addClickEventDeleteCheckbox();
-    }
+    });
 
-    loadSearchNumberList() {
-      const pageController = document.querySelector(".page-controller");
-      pageController.innerHTML = "";
+    this.loadSearchNumberList();
+    ComponentEvent.getInstance().addClickEventDeleteCheckbox();
+  }
 
-      const totalCount = BookSearchApi.getInstance().getBookTotalCount(searchObj);                      // Math.floor (값) 소수점단위를 버림
-      const maxPageNumber = totalCount % searchObj.count == 0 
-                        ? Math.floor(totalCount / searchObj.count) 
-                        : Math.floor(totalCount / searchObj.count) + 1;
+  loadSearchNumberList() {
+    const pageController = document.querySelector(".page-controller");
+    pageController.innerHTML = "";
 
-// javascript:void(0) => 클릭이벤트는 살리면서 href기능을 상실하게 하는방법!
-      pageController.innerHTML = `
+    const totalCount = BookSearchApi.getInstance().getBookTotalCount(searchObj); // Math.floor (값) 소수점단위를 버림
+    const maxPageNumber =
+      totalCount % searchObj.count == 0
+        ? Math.floor(totalCount / searchObj.count)
+        : Math.floor(totalCount / searchObj.count) + 1;
+
+    // javascript:void(0) => 클릭이벤트는 살리면서 href기능을 상실하게 하는방법!
+    pageController.innerHTML = `
           <a href="javascript:void(0)" class="pre-button disabled">이전</a>
           <ul class="page-numbers">
             
@@ -170,145 +168,151 @@ class BookService {
           <a href="javascript:void(0)" class="next-button disabled">다음</a>
       `;
 
-      if(searchObj.page != 1) { //감소
-        const preButton = pageController.querySelector(".pre-button")
-        preButton.classList.remove("disabled");
-        
-        preButton.onclick = () => {
-          searchObj.page--;
+    if (searchObj.page != 1) {
+      //감소
+      const preButton = pageController.querySelector(".pre-button");
+      preButton.classList.remove("disabled");
 
-          this.loadBookList();
-        }
-      }
-      if(searchObj.page != maxPageNumber) { //증가
-        const nextButton = pageController.querySelector(".next-button")
-        nextButton.classList.remove("disabled");
-        
-        nextButton.onclick = () => {
-          searchObj.page++;
+      preButton.onclick = () => {
+        searchObj.page--;
 
-          this.loadBookList();
-        }
-      }
-
-      const startIndex = searchObj.page % 5 == 0 
-                        ? searchObj.page - 4 
-                        : searchObj.page - (searchObj.page % 5) + 1;
-      const endIndex = startIndex + 4 <= maxPageNumber 
-                        ? startIndex + 4
-                        : maxPageNumber;
-      const pageNumbers = document.querySelector('.page-numbers');
-      
-
-      for(let i = startIndex; i <= endIndex; i++) {
-        pageNumbers.innerHTML += `
-        <a href="javascript:void(0)"class="page-button ${i == searchObj.page ? "disabled" : ""}"><li>${i}</li></a>`
-      }
-
-      const pageButtons = document.querySelectorAll('.page-button');
-      pageButtons.forEach((button) => {
-        const pageNumber = button.textContent;
-        if(pageNumber != searchObj.page) {
-          button.onclick = () => {
-            searchObj.page = pageNumber;
-            this.loadBookList(); // page값을 덮어씨우고 새로 불러옴
-          }
-        } 
-      })
+        this.loadBookList();
+      };
     }
-    
+    if (searchObj.page != maxPageNumber) {
+      //증가
+      const nextButton = pageController.querySelector(".next-button");
+      nextButton.classList.remove("disabled");
 
-    loadCategories() {
-      const responseData = BookSearchApi.getInstance().getCategories();
+      nextButton.onclick = () => {
+        searchObj.page++;
 
-      const categorySelect = document.querySelector('.category-select');
-      categorySelect.innerHTML = `<option value="">전체조회</option>`;
+        this.loadBookList();
+      };
+    }
 
-      responseData.forEach(data => {
-        categorySelect.innerHTML += `
+    const startIndex =
+      searchObj.page % 5 == 0
+        ? searchObj.page - 4
+        : searchObj.page - (searchObj.page % 5) + 1;
+    const endIndex =
+      startIndex + 4 <= maxPageNumber ? startIndex + 4 : maxPageNumber;
+    const pageNumbers = document.querySelector(".page-numbers");
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      pageNumbers.innerHTML += `
+        <a href="javascript:void(0)"class="page-button ${
+          i == searchObj.page ? "disabled" : ""
+        }"><li>${i}</li></a>`;
+    }
+
+    const pageButtons = document.querySelectorAll(".page-button");
+    pageButtons.forEach((button) => {
+      const pageNumber = button.textContent;
+      if (pageNumber != searchObj.page) {
+        button.onclick = () => {
+          searchObj.page = pageNumber;
+          this.loadBookList(); // page값을 덮어씨우고 새로 불러옴
+        };
+      }
+    });
+  }
+
+  loadCategories() {
+    const responseData = BookSearchApi.getInstance().getCategories();
+
+    const categorySelect = document.querySelector(".category-select");
+    categorySelect.innerHTML = `<option value="">전체조회</option>`;
+
+    responseData.forEach((data) => {
+      categorySelect.innerHTML += `
           <option value="${data.category}">${data.category}</option>
         `;
-      })
+    });
+  }
+
+  removeBooks(deleteArray) {
+    let successFlag = BookSearchApi.getInstance().deleteBooks(deleteArray);
+    if (successFlag) {
+      searchObj.page = 1;
+      this.loadBookList();
     }
-    
-    removeBooks(deleteArray) {
-      let successFlag = BookSearchApi.getInstance().deleteBooks(deleteArray);
-      if(successFlag) {
-        searchObj.page = 1;
-        this.loadBookList();
-      }
-    }
+  }
 }
 
 class ComponentEvent {
   static #instance = null;
   static getInstance() {
-      if(this.#instance == null) {
-          this.#instance = new ComponentEvent();
-      }
-      return this.#instance;
+    if (this.#instance == null) {
+      this.#instance = new ComponentEvent();
     }
-    addClickEventSearchButton() {
-      const categorySelect = document.querySelector(".category-select");
-      const searchInput = document.querySelector(".search-input");
-      const searchButton = document.querySelector(".search-button");
+    return this.#instance;
+  }
+  addClickEventSearchButton() {
+    const categorySelect = document.querySelector(".category-select");
+    const searchInput = document.querySelector(".search-input");
+    const searchButton = document.querySelector(".search-button");
 
-      searchButton.onclick = () => {
-        searchObj.category = categorySelect.value;
-        searchObj.searchValue = searchInput.value;
-        searchObj.page = 1; //  검색을 한다면 1번페이지로 이동
-        BookService.getInstance().loadBookList();
-        console.log("검색실행");
+    searchButton.onclick = () => {
+      searchObj.category = categorySelect.value;
+      searchObj.searchValue = searchInput.value;
+      searchObj.page = 1; //  검색을 한다면 1번페이지로 이동
+      BookService.getInstance().loadBookList();
+      console.log("검색실행");
+    };
+
+    searchInput.onkeyup = () => {
+      if (window.event.keyCode == 13) {
+        //enter키가 들어온다면 13 == enter
+        searchButton.click(); // 위의 searchButton을 클릭한 것과 동작이 같음
       }
+    };
+  }
+  addClickEventDeleteButton() {
+    const deleteButton = document.querySelector(".delete-button");
+    deleteButton.onclick = () => {
+      if (confirm("정말로 삭제하시겠습니까?")) {
+        const deleteArray = new Array();
 
-      searchInput.onkeyup = () => { 
-        if(window.event.keyCode == 13) { //enter키가 들어온다면 13 == enter
-          searchButton.click(); // 위의 searchButton을 클릭한 것과 동작이 같음
-        }
-      }
-    }
-    addClickEventDeleteButton() {
-      const deleteButton = document.querySelector(".delete-button");
-      deleteButton.onclick = () => {
-        if(confirm("정말로 삭제하시겠습니까?")) {
-          const deleteArray = new Array();
-
-          const deleteCheckboxs = document.querySelectorAll(".delete-checkbox");
-          deleteCheckboxs.forEach((deleteCheckbox, index) => {
-            if(deleteCheckbox.checked) { // 체크상태인지 확인
-              const bookIds = document.querySelectorAll('.book-id');
-              // console.log("bookId: " + bookIds[index].textContent);
-              deleteArray.push(bookIds[index].textContent);
-            }
-          });
-
-          BookService.getInstance().removeBooks(deleteArray);
-          }
-      }
-    }
-    addClickEventDeleteCheckAll() {
-      const checkAll = document.querySelector('.delete-checkall');
-      checkAll.onclick = () => {
         const deleteCheckboxs = document.querySelectorAll(".delete-checkbox");
-        deleteCheckboxs.forEach((deleteCheckbox) => {
-          deleteCheckbox.checked = checkAll.checked;
-        });
-      }
-    }
-    addClickEventDeleteCheckbox() {
-      const deleteCheckboxs = document.querySelectorAll('.delete-checkbox');
-      const checkAll = document.querySelector('.delete-checkall');
-      
-      deleteCheckboxs.forEach(deleteCheckbox => {
-        deleteCheckbox.onclick = () => {
-          const deleteCheckedCheckboxs = document.querySelectorAll('.delete-checkbox:checked');
-          if(deleteCheckedCheckboxs.length == deleteCheckboxs.length) {
-            // 체크되있는것의 총갯수, 체크박스의 총갯수 = 전부다 체크
-            checkAll.checked = true;
-          }else {
-            checkAll.checked = false;
+        deleteCheckboxs.forEach((deleteCheckbox, index) => {
+          if (deleteCheckbox.checked) {
+            // 체크상태인지 확인
+            const bookIds = document.querySelectorAll(".book-id");
+            // console.log("bookId: " + bookIds[index].textContent);
+            deleteArray.push(bookIds[index].textContent);
           }
-        }
+        });
+
+        BookService.getInstance().removeBooks(deleteArray);
+      }
+    };
+  }
+  addClickEventDeleteCheckAll() {
+    const checkAll = document.querySelector(".delete-checkall");
+    checkAll.onclick = () => {
+      const deleteCheckboxs = document.querySelectorAll(".delete-checkbox");
+      deleteCheckboxs.forEach((deleteCheckbox) => {
+        deleteCheckbox.checked = checkAll.checked;
       });
-    }
+    };
+  }
+  addClickEventDeleteCheckbox() {
+    const deleteCheckboxs = document.querySelectorAll(".delete-checkbox");
+    const checkAll = document.querySelector(".delete-checkall");
+
+    deleteCheckboxs.forEach((deleteCheckbox) => {
+      deleteCheckbox.onclick = () => {
+        const deleteCheckedCheckboxs = document.querySelectorAll(
+          ".delete-checkbox:checked"
+        );
+        if (deleteCheckedCheckboxs.length == deleteCheckboxs.length) {
+          // 체크되있는것의 총갯수, 체크박스의 총갯수 = 전부다 체크
+          checkAll.checked = true;
+        } else {
+          checkAll.checked = false;
+        }
+      };
+    });
+  }
 }
