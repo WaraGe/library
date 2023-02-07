@@ -122,7 +122,7 @@ public class BookApi {
 //    public ResponseEntity<CMRespDto<?>> modifyBookImg(@PathVariable String bookCode, @RequestPart List<MultipartFile> files) {
 //        bookService.registerBookImage(bookCode, files);
 //        return ResponseEntity.ok()
-//                .body(new CMRespDto<>(HttpStatus.OK.value(), "Img Upload Successfully", true));
+//                .body(new CMRespDto<>(HttpStatus.OK.v alue(), "Img Upload Successfully", true));
 //    }
 
     //이미지 삽입

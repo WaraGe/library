@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasRole("ADMIN")// DB에서는 ROLE_ADMIN으로 저장했는데 ADMIN으로만 적는 이유는 시큐리티가 접두사로 ROLE_이 붙혀 있는것만 인식해서 그 뒷부분을 읽기 때문(포함)
                 .anyRequest() // 모든 경로를
                 .permitAll() // 인증을 줘라
-                .and() //
+                .and()
                 .formLogin() // 폼tag로 로그인하라
                 .loginPage("/account/login") // 로그인 페이지 GET요청
                 .loginProcessingUrl("/account/login") // 로그인 인증 POST요청

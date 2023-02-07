@@ -1,10 +1,17 @@
 window.onload = () => {
+  HeaderService.getInstance().loadHeader();
+
   SearchService.getInstance().clearBookList();
   SearchService.getInstance().loadSearchBooks();
   SearchService.getInstance().loadCategories();
+  SearchService.getInstance().setMaxPage();
   
   ComponentEvent.getInstance().addClickEventCategoryCheckboxs(); 
+  ComponentEvent.getInstance().addScrollEventPaging(); 
+  ComponentEvent.getInstance().addClickEventSearchButton(); 
 };
+
+let MaxPage = 0
 
 const searchObj = {
   page: 1,
@@ -89,6 +96,13 @@ class SearchService {
     return this.#instance;
   }
 
+  setMaxPage() {
+    const totalcount = SearchApi.getInstance().getTotalCount();
+    MaxPage = totalcount % 10 == 0 
+    ? totalcount / 10 
+    : Math.floor(totalcount / 10) + 1;
+  }
+
   loadCategories() {
     const categoryList = document.querySelector(".category-list");
     categoryList.innerHTML = ``;
@@ -139,7 +153,6 @@ class SearchService {
             </div>
         </div>
       `;
-      
     })
   }
 }
@@ -165,7 +178,42 @@ class ComponentEvent {
           searchObj.categories.splice(index, 1);
         }
         console.log(searchObj.categories);
+        document.querySelector(".search-button").onclick(); //카테고리 선정시 자동으로 선택
       };
     });
+  }
+  addScrollEventPaging() {
+    const html = document.querySelector("html");
+    const body = document.querySelector("body");
+    
+
+    body.onscroll = () => {
+      const scrollPosition = body.offsetHeight - html.clientHeight - html.scrollTop;
+      console.log("높이: " + scrollPosition);
+      
+      if(scrollPosition < 250 && searchObj.page < MaxPage) {
+        searchObj.page++;
+        SearchService.getInstance().loadSearchBooks();
+      }
+    }
+  }
+  
+  addClickEventSearchButton() {
+    const searchButton = document.querySelector(".search-button");
+    const searchInput = document.querySelector(".search-input");
+    searchButton.onclick = () => {
+      searchObj.searchValue = searchInput.value;
+      searchObj.page = 1; // 1page부터 정렬
+      window.scrollTo(0, 0); //최상단으로 이동
+      SearchService.getInstance().clearBookList(); // 기존의 데이터 삭제
+      SearchService.getInstance().setMaxPage(); // 검색 결과에 대한 최대 페이지
+      SearchService.getInstance().loadSearchBooks(); // 카테고리 검색결과 가져오기
+    }
+
+    searchInput.onkeyup = () => {
+      if(window.event.keyCode == 13) { // enter 클릭
+        searchButton.click();
+      }
+    }
   }
 }
