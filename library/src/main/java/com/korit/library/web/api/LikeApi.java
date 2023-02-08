@@ -19,20 +19,21 @@ public class LikeApi {
 
 
     @PostMapping("/book/{bookId}/like")
-    public ResponseEntity<CMRespDto<Boolean>> like(@PathVariable int bookId,
+    public ResponseEntity<CMRespDto<Integer>> like(@PathVariable int bookId,
                                                    @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        @AuthenticationPrincipal PrincipalDetails principalDetails == 로그인 했다는 정보
 
-        likeService.like(bookId, principalDetails.getUser().getUserId());
+        int likeCount = likeService.like(bookId, principalDetails.getUser().getUserId());
 
-    return ResponseEntity.ok().body(new CMRespDto<>(HttpStatus.OK.value(), "Like Successfully", true));
+    return ResponseEntity.ok().body(new CMRespDto<>(HttpStatus.OK.value(), "Like Successfully", likeCount));
     }
 
     @DeleteMapping("/book/{bookId}/like")
-    public ResponseEntity<CMRespDto<Boolean>> dislike(@PathVariable int bookId,
+    public ResponseEntity<CMRespDto<Integer>> dislike(@PathVariable int bookId,
                                                    @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        likeService.dislike(bookId, principalDetails.getUser().getUserId());
+        int likeCount = likeService.dislike(bookId, principalDetails.getUser().getUserId());
 
-        return ResponseEntity.ok().body(new CMRespDto<>(HttpStatus.OK.value(), "DisLike Successfully", true));
+        return ResponseEntity.ok().body(new CMRespDto<>(HttpStatus.OK.value(), "DisLike Successfully", likeCount));
     }
 }

@@ -15,31 +15,33 @@ public class LikeService {
 
     private final LikeRepository likeRepository;
 
-    public void like(int bookId, int userId) {
+    public int like(int bookId, int userId) {
         BookLike bookLike = BookLike.builder()
                 .bookId(bookId)
                 .userId(userId)
                 .build();
         if(likeRepository.getLikeStatus(bookLike) > 0) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("LikeError", "이미 좋아요 누른 도서명 입니다.");
+            errorMap.put("LikeError", "이미 추천을 누른 도서명 입니다.");
             throw new CustomRentalException(errorMap);
         }
 
         likeRepository.addLike(bookLike);
+        return likeRepository.getLikeCount(bookId);
     }
 
-    public void dislike(int bookId, int userId) {
+    public int dislike(int bookId, int userId) {
         BookLike bookLike = BookLike.builder()
                 .bookId(bookId)
                 .userId(userId)
                 .build();
         if(likeRepository.getLikeStatus(bookLike) == 0) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("LikeError", "좋아요 취소 상태 도서명 입니다.");
+            errorMap.put("LikeError", "추천을 눌려주세요.");
             throw new CustomRentalException(errorMap);
         }
 
         likeRepository.deleteLike(bookLike);
+        return likeRepository.getLikeCount(bookId);
     }
 }

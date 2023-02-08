@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+        //BCryptPasswordEncoder.matches를 사용해서 비밀번호 변경기능 가능
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
