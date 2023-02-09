@@ -5,21 +5,21 @@ window.onload = () => {
   SearchService.getInstance().loadSearchBooks();
   SearchService.getInstance().loadCategories();
   SearchService.getInstance().setMaxPage();
-  
-  ComponentEvent.getInstance().addClickEventCategoryCheckboxs(); 
-  ComponentEvent.getInstance().addScrollEventPaging(); 
-  ComponentEvent.getInstance().addClickEventSearchButton(); 
+
+  ComponentEvent.getInstance().addClickEventCategoryCheckboxs();
+  ComponentEvent.getInstance().addScrollEventPaging();
+  ComponentEvent.getInstance().addClickEventSearchButton();
 
   SearchService.getInstance().onLoadSearch();
 };
 
-let MaxPage = 0
+let MaxPage = 0;
 
 const searchObj = {
   page: 1,
   searchValue: null,
   categories: new Array(), //하나만 검색하면 안되기때문!
-  count: 10
+  count: 10,
 };
 
 class SearchApi {
@@ -87,6 +87,79 @@ class SearchApi {
     });
     return responseData;
   }
+  //좋아요 추가
+  setLike(bookId) {
+    let likeCount = -1;
+
+    $.ajax({
+      async: false,
+      type: "post",
+      url: `http://127.0.0.1:8000/api/book/${bookId}/like`,
+      dataType: "json",
+      success: (response) => {
+        likeCount = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+    return likeCount;
+  }
+  //좋아요 삭제
+  setDisLike(bookId) {
+    let likeCount = -1;
+
+    $.ajax({
+      async: false,
+      type: "delete",
+      url: `http://127.0.0.1:8000/api/book/${bookId}/like`,
+      dataType: "json",
+      success: (response) => {
+        likeCount = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+    return likeCount;
+  }
+  // 대여하기
+  rentalBook(bookId) {
+    let responseData = false;
+
+    $.ajax({
+      async: false,
+      type: "post",
+      url: `http://127.0.0.1:8000/api/rental/${bookId}`,
+      dataType: "json",
+      success: (response) => {
+        responseData = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+        alert(error.responseJSON.data.rentalCountError);
+      },
+    });
+    return responseData;
+  }
+  // 반납하기
+    returnBook(bookId) {
+    let responseData = false;
+
+    $.ajax({
+      async: false,
+      type: "put",
+      url: `http://127.0.0.1:8000/api/rental/${bookId}`,
+      dataType: "json",
+      success: (response) => {
+        responseData = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+    return responseData;
+  }
 }
 
 class SearchService {
@@ -100,9 +173,10 @@ class SearchService {
 
   onLoadSearch() {
     const URLSearch = new URLSearchParams(location.search);
-    if(URLSearch.has("searchValue")) { // searchValue 검색값 존재여부
+    if (URLSearch.has("searchValue")) {
+      // searchValue 검색값 존재여부
       const searchValue = URLSearch.get("searchValue");
-      if(searchValue == "" && searchValue == null) {
+      if (searchValue == "" && searchValue == null) {
         return; // searchValue값이 공백일때
       }
       const searchInput = document.querySelector(".search-input");
@@ -114,9 +188,8 @@ class SearchService {
 
   setMaxPage() {
     const totalCount = SearchApi.getInstance().getTotalCount();
-    MaxPage = totalCount % 10 == 0 
-    ? totalCount / 10 
-    : Math.floor(totalCount / 10) + 1;
+    MaxPage =
+      totalCount % 10 == 0 ? totalCount / 10 : Math.floor(totalCount / 10) + 1;
   }
 
   loadCategories() {
@@ -124,22 +197,22 @@ class SearchService {
     categoryList.innerHTML = ``;
 
     const responseData = SearchApi.getInstance().getCategories();
-    responseData.forEach(categoryObj => {
+    responseData.forEach((categoryObj) => {
       categoryList.innerHTML += `
         <div class="category-item">
           <input type="checkbox" class="category-checkbox" id="${categoryObj.category}" value="${categoryObj.category}">
           <label for="${categoryObj.category}">${categoryObj.category}</label>
         </div>
       `;
-    })
+    });
   }
 
-// 검색이 된다던지, 페이지 새로고침시 실행
+  // 검색이 된다던지, 페이지 새로고침시 실행
   clearBookList() {
     const contentFlex = document.querySelector(".content-flex");
     contentFlex.innerHTML = "";
   }
-  
+
   loadSearchBooks() {
     const responseData = SearchApi.getInstance().searchBook();
     const contentFlex = document.querySelector(".content-flex");
@@ -152,18 +225,31 @@ class SearchService {
         <div class="info-container">
               <div class="book-desc">
                 <div class="img-container">
-                  <img src="http://127.0.0.1:8000/image/book/${data.saveName != null ? data.saveName : "noimg.gif"}" class="book-img">
+                  <img src="http://127.0.0.1:8000/image/book/${
+                    data.saveName != null ? data.saveName : "noimg.gif"
+                  }" class="book-img">
                 </div>
-                <div class="like-info"><i class="fa-regular fa-thumbs-up"></i><span class="like-count">${data.likeCount != null ? data.likeCount : 0}</span></div>
+                <div class="like-info"><i class="fa-regular fa-thumbs-up"></i><span class="like-count">${
+                  data.likeCount != null ? data.likeCount : 0
+                }</span></div>
               </div>
               
               <div class="book-info">
+                <input type="hidden" class="book-id" value="${data.bookId}">
                 <div class="book-code">${data.bookCode}</div>
                 <h3 class="book-name">${data.bookName}</h3>
-                <div class="info-text book-author"><b>저자: </b>${data.author}</div>
-                <div class="info-text book-publisher"><b>출판사: </b>${data.publisher}</div>
-                <div class="info-text book-publicationdate"><b>출판일: </b>${data.publicationDate}</div>
-                <div class="info-text book-category"><b>카테고리: </b>${data.category}</div>
+                <div class="info-text book-author"><b>저자: </b>${
+                  data.author
+                }</div>
+                <div class="info-text book-publisher"><b>출판사: </b>${
+                  data.publisher
+                }</div>
+                <div class="info-text book-publicationdate"><b>출판일: </b>${
+                  data.publicationDate
+                }</div>
+                <div class="info-text book-category"><b>카테고리: </b>${
+                  data.category
+                }</div>
                 <div class="book-buttons">
                   
                 </div>
@@ -172,12 +258,12 @@ class SearchService {
         </div>
       `;
       const bookButtons = document.querySelectorAll(".book-buttons");
-      if(principal == null) {
-        if(data.rentalDtlId != 0 && data.returnDate == null) {
+      if (principal == null) {
+        if (data.rentalDtlId != 0 && data.returnDate == null) {
           bookButtons[bookButtonsLength + index].innerHTML = `
             <button type="button" class="rental-button" disabled}>대여중</button>
           `;
-        }else {
+        } else {
           bookButtons[bookButtonsLength + index].innerHTML = `
             <button type="button" class="rental-button" disabled}>대여가능</button>
           `;
@@ -186,32 +272,43 @@ class SearchService {
         bookButtons[bookButtonsLength + index].innerHTML += `
         <button type="button" class="like-button" disabled}>추천</button>
         `;
-      }else { // 로그인이 되어있을때
-        if(data.rentalDtlId != 0 && data.returnDate == null && data.userId != principal.user.userId) {
+      } else {
+        // 로그인이 되어있을때
+        if (
+          data.rentalDtlId != 0 &&
+          data.returnDate == null &&
+          data.userId != principal.user.userId
+        ) {
           bookButtons[bookButtonsLength + index].innerHTML = `
-            <button type="button" class="rental-button" disabled}>대여중</button>
+            <button type="button" class="rental-buttons rental-button" disabled}>대여중</button>
           `;
-        }else if(data.rentalDtlId != 0 && data.returnDate == null && data.userId == principal.user.userId){
+        } else if (
+          data.rentalDtlId != 0 &&
+          data.returnDate == null &&
+          data.userId == principal.user.userId
+        ) {
           bookButtons[bookButtonsLength + index].innerHTML = `
-            <button type="button" class="return-button"}>반납하기</button>
+            <button type="button" class="rental-buttons return-button"}>반납하기</button>
           `;
-        }else {
+        } else {
           bookButtons[bookButtonsLength + index].innerHTML = `
-            <button type="button" class="rental-button"}>대여하기</button>
+            <button type="button" class="rental-buttons rental-button"}>대여하기</button>
         `;
         }
 
-        if(data.likeId != 0) {
+        if (data.likeId != 0) {
           bookButtons[bookButtonsLength + index].innerHTML += `
-            <button type="button" class="dislike-button"}>추천취소</button>
+            <button type="button" class="like-buttons dislike-button"}>추천취소</button>
         `;
-        }else {
+        } else {
           bookButtons[bookButtonsLength + index].innerHTML += `
-            <button type="button" class="like-button">추천</button>
+            <button type="button" class="like-buttons like-button">추천</button>
           `;
         }
+        ComponentEvent.getInstance().addClickEventRentalButtons();
+        ComponentEvent.getInstance().addClickEventLikeButton();
       }
-    })
+    });
   }
 }
 
@@ -227,7 +324,7 @@ class ComponentEvent {
   addClickEventCategoryCheckboxs() {
     const checkboxs = document.querySelectorAll(".category-checkbox");
 
-    checkboxs.forEach(checkbox => {
+    checkboxs.forEach((checkbox) => {
       checkbox.onclick = () => {
         if (checkbox.checked) {
           searchObj.categories.push(checkbox.value);
@@ -243,19 +340,19 @@ class ComponentEvent {
   addScrollEventPaging() {
     const html = document.querySelector("html");
     const body = document.querySelector("body");
-    
 
     body.onscroll = () => {
-      const scrollPosition = body.offsetHeight - html.clientHeight - html.scrollTop;
+      const scrollPosition =
+        body.offsetHeight - html.clientHeight - html.scrollTop;
       console.log("높이: " + scrollPosition);
-      
-      if(scrollPosition < 250 && searchObj.page < MaxPage) {
+
+      if (scrollPosition < 250 && searchObj.page < MaxPage) {
         searchObj.page++;
         SearchService.getInstance().loadSearchBooks();
       }
-    }
+    };
   }
-  
+
   addClickEventSearchButton() {
     const searchButton = document.querySelector(".search-button");
     const searchInput = document.querySelector(".search-input");
@@ -266,12 +363,66 @@ class ComponentEvent {
       SearchService.getInstance().clearBookList(); // 기존의 데이터 삭제
       SearchService.getInstance().setMaxPage(); // 검색 결과에 대한 최대 페이지
       SearchService.getInstance().loadSearchBooks(); // 카테고리 검색결과 가져오기
-    }
+    };
 
     searchInput.onkeyup = () => {
-      if(window.event.keyCode == 13) { // enter 클릭
+      if (window.event.keyCode == 13) {
+        // enter 클릭
         searchButton.click();
       }
-    }
+    };
+  }
+
+  addClickEventLikeButton() {
+    const likeButtons = document.querySelectorAll(".like-buttons");
+    const bookIds = document.querySelectorAll(".book-id");
+    const likeCounts = document.querySelectorAll(".like-count");
+
+    likeButtons.forEach((button, index) => {
+      button.onclick = () => {
+        if(button.classList.contains("like-button")) {
+          const likeCount = SearchApi.getInstance().setLike(bookIds[index].value);
+          if(likeCount != -1) {
+            likeCounts[index].textContent = likeCount;//.textcontent 숫자가 들어가 있는 영역
+            button.classList.remove("like-button"); 
+            button.classList.add("dislike-button");
+            button.textContent = "추천취소";
+          }
+          
+        }else {
+          const disLikeCount = SearchApi.getInstance().setDisLike(bookIds[index].value);
+          if(likeCount != -1) {
+            likeCounts[index].textContent = disLikeCount;//.textcontent 숫자가 들어가 있는 영역
+            button.classList.remove("dislike-button"); 
+            button.classList.add("like-button");
+            button.textContent = "추천";
+          }
+        }
+      };
+    });
+  }
+  addClickEventRentalButtons() {
+    const rentalButtons = document.querySelectorAll(".rental-buttons");
+    const bookIds = document.querySelectorAll(".book-id");
+
+    rentalButtons.forEach((button, index) => {
+        button.onclick = () => {
+            if(button.classList.contains("rental-button") && button.disabled == false) {
+                const flag = SearchApi.getInstance().rentalBook(bookIds[index].value);
+                if(flag) {
+                    button.classList.remove("rental-button");
+                    button.classList.add("return-button");
+                    button.textContent = "반납하기";
+                }
+            }else if(button.classList.contains("return-button")) {
+                const flag = SearchApi.getInstance().returnBook(bookIds[index].value);
+                if(flag){
+                    button.classList.remove("return-button");
+                    button.classList.add("rental-button");
+                    button.textContent = "대여하기";
+          }
+        }
+      }
+    })
   }
 }

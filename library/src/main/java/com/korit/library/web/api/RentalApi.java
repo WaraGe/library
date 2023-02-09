@@ -33,7 +33,7 @@ public class RentalApi {
         rentalService.rentalOne(principalDetails.getUser().getUserId(), bookId);
         return ResponseEntity
                 .ok()
-                .body(new CMRespDto<>(HttpStatus.OK.value(), "Success", null));
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Success", true));
     }
 
     @PutMapping("/rental/{bookId}") // 반납 update이기때문 putmapping
@@ -42,7 +42,7 @@ public class RentalApi {
 
         return ResponseEntity
                 .ok()
-                .body(new CMRespDto<>(HttpStatus.OK.value(), "Success", null));
+                .body(new CMRespDto<>(HttpStatus.OK.value(), "Success", true));
     }
 
 }
