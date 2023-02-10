@@ -36,7 +36,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "get",
-      url: "http://127.0.0.1:8000/api/admin/categories",
+      url: "http://localhost:8000/api/admin/categories",
       dataType: "json",
       success: (response) => {
         console.log(response);
@@ -55,7 +55,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "get",
-      url: "http://127.0.0.1:8000/api/search/totalcount",
+      url: "http://localhost:8000/api/search/totalcount",
       data: searchObj,
       dataType: "json",
       success: (response) => {
@@ -75,7 +75,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "get",
-      url: "http://127.0.0.1:8000/api/search",
+      url: "http://localhost:8000/api/search",
       data: searchObj,
       dataType: "json",
       success: (response) => {
@@ -94,7 +94,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "post",
-      url: `http://127.0.0.1:8000/api/book/${bookId}/like`,
+      url: `http://localhost:8000/api/book/${bookId}/like`,
       dataType: "json",
       success: (response) => {
         likeCount = response.data;
@@ -112,7 +112,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "delete",
-      url: `http://127.0.0.1:8000/api/book/${bookId}/like`,
+      url: `http://localhost:8000/api/book/${bookId}/like`,
       dataType: "json",
       success: (response) => {
         likeCount = response.data;
@@ -130,7 +130,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "post",
-      url: `http://127.0.0.1:8000/api/rental/${bookId}`,
+      url: `http://localhost:8000/api/rental/${bookId}`,
       dataType: "json",
       success: (response) => {
         responseData = response.data;
@@ -149,7 +149,7 @@ class SearchApi {
     $.ajax({
       async: false,
       type: "put",
-      url: `http://127.0.0.1:8000/api/rental/${bookId}`,
+      url: `http://localhost:8000/api/rental/${bookId}`,
       dataType: "json",
       success: (response) => {
         responseData = response.data;
@@ -225,7 +225,7 @@ class SearchService {
         <div class="info-container">
               <div class="book-desc">
                 <div class="img-container">
-                  <img src="http://127.0.0.1:8000/image/book/${
+                  <img src="http://localhost:8000/image/book/${
                     data.saveName != null ? data.saveName : "noimg.gif"
                   }" class="book-img">
                 </div>

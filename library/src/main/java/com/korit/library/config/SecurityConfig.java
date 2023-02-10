@@ -1,5 +1,7 @@
 package com.korit.library.config;
 
+import com.korit.library.security.PrincipalOauth2DetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @EnableWebSecurity // WebSecurityConfigurerAdapter을 상복받은 계체에서 설정한것보다 밑에서 설정한것으로 실행하겠따. 라는 의미
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final PrincipalOauth2DetailsService principalOauth2DetailsService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -38,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest() // 모든 경로를
                 .permitAll() // 인증을 줘라
                 .and()
+
                 .formLogin() // 폼tag로 로그인하라
                 .loginPage("/account/login") // 로그인 페이지 GET요청
                 .loginProcessingUrl("/account/login") // 로그인 인증 POST요청
@@ -46,8 +52,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureForwardUrl("/account/login/error") // 로그인 실패시 error페이지
                 // get요청을 한다면 Forward와 request가 연결됨 위의 login.html이 post요청이므로 postmapping으로 연결을 해줘야함
                 //.failureHandler() 위의 ForwardUrl의 방법은 편법임
-                .defaultSuccessUrl("/index"); // 성공한다면 index.html로 돌아옴 갈때가 없을때
                 // security에 권한에 걸려서 못들어갈때는 로그인할때는 그쪽 경로로 들어가짐
 
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint()// reDirect요청을 userService로 넘겨주고 userRequest로 전달
+                .userService(principalOauth2DetailsService)
+                .and()
+
+                .defaultSuccessUrl("/index"); // 성공한다면 index.html로 돌아옴
     }
 }

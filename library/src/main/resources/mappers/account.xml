@@ -10,6 +10,7 @@
         <result property="password" column="password"></result>
         <result property="name" column="name"></result>
         <result property="email" column="email"></result>
+        <result property="provider" column="provider"></result>
         <result property="createDate" column="create_date"></result>
         <result property="updateDate" column="update_date"></result>
 
@@ -43,6 +44,7 @@
             um.password,
             um.name,
             um.email,
+            um.provider,
 
             rd.role_id,
             rm.role_name,
@@ -64,6 +66,7 @@
         um.password,
         um.name,
         um.email,
+        um.provider,
 
         rd.role_id,
         rm.role_name,
@@ -86,11 +89,20 @@
             <!--useGeneratedKeys를 사용해서 AI를 허용하고, 그 키를 keyProperty를 이용해셔 userId로 지정한다-->
             <!--user_mst의 userid의 값이 2라면, saveRole에서 데이터의 값이 2가 되고, 2번인덱스의 값의 역할은 1번이 되는 회원가입을 싫행-->
         insert into user_mst
-        values (0, #{username}, #{password}, #{name}, #{email}, now(), now())
+        values (0, #{username}, #{password}, #{name}, #{email}, #{provider}, now(), now())
     </insert>
 
     <insert id="saveRole" parameterType="com.korit.library.entity.UserMst">
         insert into role_dtl
         values (0, #{userId}, 1, now(), now())
     </insert>
+
+    <update id="setUserProvider" parameterType="com.korit.library.entity.UserMst">
+        update
+            user_mst
+        set
+            provider = #{provider}
+        where
+            user_id = #{userId}
+    </update>
 </mapper>

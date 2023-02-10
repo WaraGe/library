@@ -35,7 +35,7 @@ class BookRegisterApi {
     $.ajax({
       async: false,
       type: "post",
-      url: "http://127.0.0.1:8000/api/admin/book",
+      url: "http://localhost:8000/api/admin/book",
       contentType: "application/json",
       data: JSON.stringify(bookObj),
       dateType: "json",
@@ -56,7 +56,7 @@ class BookRegisterApi {
     $.ajax({
       async: false,
       type: "post",
-      url: `http://127.0.0.1:8000/api/admin/book/${bookObj.bookCode}/images`,
+      url: `http://localhost:8000/api/admin/book/${bookObj.bookCode}/images`,
       encType: "multipart/form-data", //json형식이랑 비슷함 multipart로 전달할때 밑에 있는 두줄은 세트
       contentType: false,
       processData: false,
@@ -79,7 +79,7 @@ class BookRegisterApi {
     $.ajax({
       async: false,
       type: "get",
-      url: "http://127.0.0.1:8000/api/admin/categories",
+      url: "http://localhost:8000/api/admin/categories",
       dateType: "json",
       success: (response) => {
         responseData = response.data;
